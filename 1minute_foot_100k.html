@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101114">
+<title>1minute_foot — Objectif 100K</title>
+<style>
+:root{color-scheme:dark;--bg:#101114;--panel:#1b1c21;--muted:#a8a9b3;--red:#ff3038;--green:#34d399}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#29202a 0%,var(--bg) 58%);color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh;display:grid;place-items:center;padding:22px}
+main{width:min(100%,520px)}.brand{font-size:12px;letter-spacing:.2em;font-weight:800;color:#ff6268}.card{margin-top:12px;background:rgba(27,28,33,.94);border:1px solid #35353e;border-radius:25px;padding:25px;box-shadow:0 20px 70px #0005}
+h1{font-size:clamp(27px,7vw,39px);line-height:1.05;margin:8px 0 5px;letter-spacing:-.04em}.sub{color:var(--muted);font-size:14px}.counts{display:flex;justify-content:space-between;align-items:end;gap:10px;margin:27px 0 17px}.big{font-size:clamp(35px,10vw,55px);font-weight:850;letter-spacing:-.05em;line-height:1}.small-label{font-size:12px;color:var(--muted);margin-bottom:7px}.target{text-align:right}.target .big{font-size:30px}.track{height:15px;background:#383840;border-radius:99px;overflow:hidden}.fill{height:100%;width:0;background:linear-gradient(90deg,#ff3038,#ff7479);border-radius:99px;transition:width .6s ease}.stats{display:flex;justify-content:space-between;gap:12px;margin-top:12px;font-size:13px;color:#ddd}.stats strong{color:#fff}.message{margin-top:22px;padding:14px 15px;background:#111216;border-radius:15px;color:#ddd;font-size:14px;line-height:1.45}.message strong{color:#fff}.footer{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:17px;color:var(--muted);font-size:11px}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:6px}.settings{margin-top:14px}.settings summary{cursor:pointer;color:#c5c5ce;font-size:13px;padding:8px 2px}.fields{display:grid;gap:10px;padding-top:10px}label{font-size:12px;color:var(--muted)}input{width:100%;margin-top:5px;background:#101114;color:white;border:1px solid #42424b;border-radius:10px;padding:12px;font-size:15px}button{border:0;border-radius:10px;padding:12px 15px;background:var(--red);color:white;font-weight:750;font-size:14px;cursor:pointer}.secondary{background:#33343d}.rowbtn{display:flex;gap:8px;flex-wrap:wrap}.hint{font-size:12px;color:var(--muted);line-height:1.5}.error{color:#ff9a9f}.hidden{display:none}
+</style>
+</head>
+<body>
+<main>
+  <div class="brand">1MINUTE_FOOT 👑</div>
+  <section class="card">
+    <div class="sub">LA ROUTE VERS LE SILVER PLAY BUTTON</div>
+    <h1>Objectif<br>100 000 abonnés.</h1>
+    <div class="counts">
+      <div><div class="small-label">ABONNÉS</div><div class="big" id="count">69 000</div></div>
+      <div class="target"><div class="small-label">OBJECTIF</div><div class="big">100 000</div></div>
+    </div>
+    <div class="track" role="progressbar" aria-label="Progression vers 100 000 abonnés" aria-valuemin="0" aria-valuemax="100000" aria-valuenow="69000"><div class="fill" id="fill"></div></div>
+    <div class="stats"><span><strong id="percent">69,0 %</strong> atteint</span><span>Encore <strong id="left">31 000</strong></span></div>
+    <div class="message" id="milestone"><strong>Prochain palier : 70K 🔥</strong><br>Plus que 1 000 abonnés pour débloquer le prochain défi.</div>
+    <div class="footer"><span id="status"><span class="dot"></span>Prêt à se connecter</span><span id="updated">Pas encore actualisé</span></div>
+    <details class="settings">
+      <summary>ℹ️ À propos du compteur</summary>
+      <div class="fields">
+        <p class="hint">Chaîne suivie : <strong>@1minute_foot</strong>. Le compteur récupère les statistiques publiques via un service tiers gratuit, sans clé API ni connexion Google.</p>
+        <p class="hint">Le service tiers peut parfois être indisponible ou changer. YouTube arrondit les nombres d’abonnés publics, donc l’affichage n’est pas toujours à l’unité près.</p>
+        <p class="hint">Pour l’ajouter à l’écran d’accueil, cette page doit être hébergée sur une adresse HTTPS. Ouvre ensuite cette adresse dans Safari → Partager → Sur l’écran d’accueil.</p>
+        <div class="rowbtn"><button id="retry">Actualiser maintenant</button><button class="secondary" id="demo">Mode aperçu</button></div>
+        <p class="hint error hidden" id="error"></p>
+      </div>
+    </details>
+  </section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const fmt=n=>Math.round(n).toLocaleString('fr-FR');
+function render(n, live=true){
+ const goal=100000, pct=Math.max(0,Math.min(100,n/goal*100)), left=Math.max(0,goal-n);
+ $('count').textContent=fmt(n); $('percent').textContent=pct.toLocaleString('fr-FR',{maximumFractionDigits:1})+' %';
+ $('left').textContent=fmt(left); $('fill').style.width=pct+'%';
+ document.querySelector('[role=progressbar]').setAttribute('aria-valuenow',n);
+ const next=Math.min(100000,(Math.floor(n/10000)+1)*10000);
+ const gap=next-n;
+ $('milestone').innerHTML=n>=goal?'<strong>100K ATTEINT. 🏆</strong><br>Direction le Silver Play Button !':`<strong>Prochain palier : ${fmt(next/1000)}K 🔥</strong><br>Plus que ${fmt(gap)} abonnés pour débloquer le prochain défi.`;
+ if(live) $('status').innerHTML='<span class="dot"></span>Connecté à YouTube';
+}
+async function refresh(){
+ try{
+  $('error').classList.add('hidden');
+  $('status').innerHTML='<span class="dot"></span>Actualisation…';
+  const profile='https://www.youtube.com/@1minute_foot';
+  const url='https://pulse.walls.sh/profile?url='+encodeURIComponent(profile);
+  const r=await fetch(url,{cache:'no-store'});
+  if(!r.ok) throw new Error('Le service de statistiques est temporairement indisponible.');
+  const data=await r.json();
+  const n=Number(data.followers);
+  if(!Number.isFinite(n)||n<=0) throw new Error('Le nombre d’abonnés n’a pas pu être récupéré.');
+  render(n); $('updated').textContent='Mis à jour à '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+ }catch(e){$('status').textContent='Actualisation indisponible';$('error').textContent=e.message+' La barre conserve la dernière valeur affichée.';$('error').classList.remove('hidden')}
+}
+$('retry').addEventListener('click',refresh);
+$('demo').addEventListener('click',()=>{render(69000,false);$('status').textContent='Mode aperçu — pas connecté';$('updated').textContent='Exemple uniquement'});
+render(69000,false);refresh();setInterval(refresh,60000);
+</script>
+</body>
+</html>
